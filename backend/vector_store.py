@@ -33,7 +33,7 @@ def get_or_create_collection(document_id: str) -> chromadb.Collection:
     return _collection_cache[safe_id]
 
 
-# --- Embeddings ---
+# Embeddings
 
 def embed_texts(texts: list[str]) -> list[list[float]]:
     result = _genai_client.models.embed_content(
@@ -53,7 +53,7 @@ def embed_query(query: str) -> list[float]:
     return result.embeddings[0].values
 
 
-# --- Store & Retrieve ---
+# Store & Retrieve
 
 def store_chunks(document_id: str, chunks: list[dict]) -> int:
     collection = get_or_create_collection(document_id)
