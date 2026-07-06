@@ -48,7 +48,10 @@ async def upload_file(file: UploadFile = File(...)):
         raise HTTPException(status_code=422, detail="No extractable text found in file.")
 
     document_id = f"{file.filename}_{uuid.uuid4().hex[:8]}"
-    stored = store_chunks(document_id, chunks)
+    try:
+        stored = store_chunks(document_id, chunks)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Embedding/storage failed: {e}")
 
     return UploadResponse(
         document_id=document_id,

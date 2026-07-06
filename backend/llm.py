@@ -2,7 +2,10 @@ from google import genai
 from google.genai import types
 from config import settings
 
-_client = genai.Client(api_key=settings.gemini_api_key)
+_client = genai.Client(
+    api_key=settings.gemini_api_key,
+    http_options={"api_version": "v1"},
+)
 
 SYSTEM_PROMPT = (
     "You are a helpful document assistant. "
