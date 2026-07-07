@@ -19,7 +19,7 @@ DeepDive enables deep exploration of document contents by combining semantic sea
 
 ### Backend
 - **FastAPI**: A high-performance web framework for building APIs with Python.
-- **Google GenAI SDK**: Integrates Gemini models (e.g., `gemini-2.0-flash`) for text generation and `gemini-embedding-001` for vector embedding.
+- **Google GenAI SDK**: Integrates Gemini models (e.g., `gemini-3.1-flash-lite`) for text generation and `gemini-embedding-001` for vector embedding.
 - **ChromaDB**: An open-source, developer-friendly vector database to store and query document embeddings.
 - **Document Parsers**:
   - **PyMuPDF (fitz)**: For fast and accurate PDF parsing.
