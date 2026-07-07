@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { Layers, RefreshCw, BookOpen, Menu, X, Upload } from 'lucide-react'
 import { UploadPanel } from '@/components/UploadPanel'
 import { MessageList } from '@/components/MessageList'
@@ -18,14 +18,15 @@ export default function App() {
   const [messages, setMessages] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [sidebarTab, setSidebarTab] = useState('docs') // 'docs' | 'upload'
+  const [sidebarTab, setSidebarTab] = useState('docs')
+  const uploadPanelRef = useRef(null)
 
   // Load existing documents on mount
   const refreshDocs = useCallback(async () => {
     try {
       const { documents: docs } = await listDocuments()
       setDocuments(docs)
-    } catch {}
+    } catch { }
   }, [])
 
   useEffect(() => { refreshDocs() }, [refreshDocs])
@@ -139,7 +140,7 @@ export default function App() {
 
         {/* Desktop: Upload always shown */}
         <div className="hidden lg:block p-3 border-b border-[var(--color-border)] shrink-0">
-          <UploadPanel onDocumentReady={handleDocumentReady} />
+          <UploadPanel ref={uploadPanelRef} onDocumentReady={handleDocumentReady} />
         </div>
 
         {/* Mobile: Upload tab */}
@@ -210,7 +211,20 @@ export default function App() {
         </header>
 
         {/* Messages */}
-        <MessageList messages={messages} isLoading={isLoading} />
+        <MessageList
+          messages={messages}
+          isLoading={isLoading}
+          onOpenSidebar={() => {
+            if (window.innerWidth >= 1024) {
+              // Desktop: sidebar is always visible — open file picker directly
+              uploadPanelRef.current?.triggerPicker()
+            } else {
+              // Mobile: slide in the drawer on the Upload tab
+              setSidebarTab('upload')
+              setSidebarOpen(true)
+            }
+          }}
+        />
 
         {/* Input */}
         <ChatInput documentId={activeDocId} disabled={isLoading} onSend={handleSend} />

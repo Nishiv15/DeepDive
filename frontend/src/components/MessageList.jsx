@@ -83,7 +83,7 @@ function ThinkingBubble() {
 }
 
 // Message list
-export function MessageList({ messages, isLoading }) {
+export function MessageList({ messages, isLoading, onOpenSidebar }) {
   const bottomRef = useRef(null)
 
   useEffect(() => {
@@ -92,14 +92,29 @@ export function MessageList({ messages, isLoading }) {
 
   if (messages.length === 0 && !isLoading) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center p-6 sm:p-8 overflow-y-auto">
+      <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center p-6 sm:p-8 overflow-y-auto">
         <div className="rounded-full bg-[var(--color-surface-2)] border border-[var(--color-border)] p-4 sm:p-5">
-          <Bot size={28} className="text-[var(--color-accent)] sm:w-8 sm:h-8" />
+          <Bot size={28} className="text-[var(--color-accent)]" />
         </div>
-        <h3 className="font-semibold text-[var(--color-text)] text-sm sm:text-base">Ready to answer</h3>
-        <p className="text-xs sm:text-sm text-[var(--color-muted)] max-w-[260px] sm:max-w-xs">
-          Upload a document and ask anything about it.
-        </p>
+
+        <div className="space-y-1.5">
+          <h3 className="font-semibold text-[var(--color-text)] text-sm sm:text-base">
+            No document selected
+          </h3>
+          <p className="text-xs sm:text-sm text-[var(--color-muted)] max-w-[260px] sm:max-w-xs">
+            Upload a PDF, DOCX, TXT, or XLSX and start asking questions about it.
+          </p>
+        </div>
+
+        <button
+          onClick={onOpenSidebar}
+          className="mt-1 inline-flex items-center gap-2 rounded-xl bg-[var(--color-accent)] hover:bg-[var(--color-accent-2)] text-white text-sm font-semibold px-5 py-2.5 transition-all duration-200 hover:scale-[1.03] active:scale-[0.97] shadow-lg hover:shadow-[0_0_24px_var(--color-accent-glow)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:ring-offset-2 focus:ring-offset-[var(--color-bg)]"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
+          </svg>
+          Upload a File
+        </button>
       </div>
     )
   }

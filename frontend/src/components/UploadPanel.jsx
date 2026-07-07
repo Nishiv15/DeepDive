@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useRef, useState, forwardRef, useImperativeHandle } from 'react'
 import { Upload, FileText, X, CheckCircle2, Loader2, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -14,8 +14,13 @@ const MIME_LABELS = {
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'XLSX',
 }
 
-export function UploadPanel({ onDocumentReady }) {
+export const UploadPanel = forwardRef(function UploadPanel({ onDocumentReady }, ref) {
   const inputRef = useRef(null)
+
+  // Exposed so parent can trigger the file picker from outside
+  useImperativeHandle(ref, () => ({
+    triggerPicker: () => inputRef.current?.click(),
+  }))
   const [file, setFile] = useState(null)
   const [dragging, setDragging] = useState(false)
   const [progress, setProgress] = useState(0)
@@ -178,4 +183,4 @@ export function UploadPanel({ onDocumentReady }) {
       </CardContent>
     </Card>
   )
-}
+})
