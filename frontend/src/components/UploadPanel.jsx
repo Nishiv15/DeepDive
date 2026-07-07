@@ -82,7 +82,7 @@ export function UploadPanel({ onDocumentReady }) {
           onDragLeave={onDragLeave}
           onClick={() => inputRef.current?.click()}
           className={cn(
-            'relative flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed p-8 cursor-pointer transition-all duration-200',
+            'relative flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed p-5 sm:p-8 cursor-pointer transition-all duration-200',
             dragging
               ? 'border-[var(--color-accent)] bg-[var(--color-accent-glow)] scale-[1.01]'
               : 'border-[var(--color-border)] hover:border-[var(--color-border-bright)] hover:bg-[var(--color-surface-2)]'
