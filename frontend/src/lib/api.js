@@ -1,73 +1,54 @@
-const BASE = '/api/v1'
+import axios from 'axios'
 
-// Safe JSON parse helper
-function safeParseJson(text) {
-  try { return JSON.parse(text) } catch { return null }
-}
+const api = axios.create({
+  baseURL: '/api/v1',
+})
 
-function extractDetail(body, fallback) {
-  const parsed = safeParseJson(body)
-  return parsed?.detail || parsed?.message || fallback
-}
+// Response interceptor
+api.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    const detail =
+      err.response?.data?.detail ||
+      err.response?.data?.message ||
+      err.message ||
+      'Unknown error'
+    return Promise.reject(new Error(detail))
+  }
+)
 
-// Upload
+// Upload (with progress)
 export async function uploadFile(file, onProgress) {
   const form = new FormData()
   form.append('file', file)
 
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest()
-    xhr.open('POST', `${BASE}/upload`)
-
-    xhr.upload.onprogress = (e) => {
-      if (e.lengthComputable && onProgress) onProgress(Math.round((e.loaded / e.total) * 100))
-    }
-
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        resolve(safeParseJson(xhr.responseText))
-      } else {
-        reject(new Error(extractDetail(xhr.responseText, `Upload failed (HTTP ${xhr.status})`)))
-      }
-    }
-
-    xhr.onerror = () => reject(new Error('Network error during upload'))
-    xhr.send(form)
+  const { data } = await api.post('/upload', form, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    onUploadProgress: (e) => {
+      if (e.total && onProgress) onProgress(Math.round((e.loaded / e.total) * 100))
+    },
   })
+  return data
 }
 
 // Chat
 export async function chat({ documentId, query, topK = 5, includeCitations = true }) {
-  const res = await fetch(`${BASE}/chat`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      document_id: documentId,
-      query,
-      top_k: topK,
-      include_citations: includeCitations,
-    }),
+  const { data } = await api.post('/chat', {
+    document_id: documentId,
+    query,
+    top_k: topK,
+    include_citations: includeCitations,
   })
-
-  if (!res.ok) {
-    const text = await res.text()
-    throw new Error(extractDetail(text, `Chat failed (HTTP ${res.status})`))
-  }
-
-  return res.json()
+  return data
 }
 
 // Document management
 export async function listDocuments() {
-  const res = await fetch(`${BASE}/documents`)
-  if (!res.ok) throw new Error('Failed to fetch documents')
-  return res.json()
+  const { data } = await api.get('/documents')
+  return data
 }
 
 export async function deleteDocument(documentId) {
-  const res = await fetch(`${BASE}/documents/${encodeURIComponent(documentId)}`, {
-    method: 'DELETE',
-  })
-  if (!res.ok) throw new Error('Failed to delete document')
-  return res.json()
+  const { data } = await api.delete(`/documents/${encodeURIComponent(documentId)}`)
+  return data
 }
